@@ -9,7 +9,6 @@ import Message from './Message';
 import { useSelector } from 'react-redux';
 import { selectUser } from './features/userSlice';
 import {selectChannelId,selectChannelName} from './features/appSlice';
-import firebase from "firebase"
 import axios from "./axios";
 import Pusher from "pusher-js";
 

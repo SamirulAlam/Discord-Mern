@@ -13,7 +13,6 @@ import SidebarChannel from './SidebarChannel';
 import { useSelector } from 'react-redux';
 import { selectUser } from './features/userSlice';
 import { auth } from './firebase';
-import firebase from "firebase";
 import axios from "./axios";
 import Pusher from "pusher-js"
 
@@ -35,7 +34,7 @@ function Sidebar() {
     useEffect(()=>{
        getChannels();
        const channel = pusher.subscribe('channels');
-        channel.bind('newChannel', function(data) {
+        channel.bind('newChannel',(data) =>{
             getChannels();
         });
     },[])

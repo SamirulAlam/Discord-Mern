@@ -12,22 +12,41 @@ import SettingsIcon from '@material-ui/icons/Settings'
 import SidebarChannel from './SidebarChannel';
 import { useSelector } from 'react-redux';
 import { selectUser } from './features/userSlice';
-import db, { auth } from './firebase';
-import firebase from "firebase"
+import { auth } from './firebase';
+import firebase from "firebase";
+import axios from "./axios";
+import Pusher from "pusher-js"
+
+const pusher = new Pusher('2d5c9b126c78e10f60ba', {
+    cluster: 'ap2'
+  });
 
 function Sidebar() {
 
     const user = useSelector(selectUser);
     const [channels,setChannels] =useState([])
 
+    const getChannels =()=>{
+        axios.get("/get/channelList")
+        .then((res)=>{
+            setChannels(res.data)
+        })
+    }
     useEffect(()=>{
-       
+       getChannels();
+       const channel = pusher.subscribe('channels');
+        channel.bind('newChannel', function(data) {
+            getChannels();
+        });
     },[])
 
     const handleAddChannel=()=>{
         const channelName=prompt("Enter a new channel name");
 
         if(channelName){
+            axios.post("/new/channel",{
+                channelName: channelName
+            })
         }
     }
     return (
@@ -47,12 +66,12 @@ function Sidebar() {
                     className="sidebar__addChannel" />
                 </div>
                 <div className="sidebar__channelsList">
-                    {channels.map(({id,channel})=>(
+                    {channels.map(channel=>(
                         <SidebarChannel
-                            key={id}
-                            id={id}
+                            key={channel.id}
+                            id={channel.id}
                             timestamp={channel.timestamp}
-                            channelName={channel.channelName}
+                            channelName={channel.name}
                         />
                     ))}
             </div>
